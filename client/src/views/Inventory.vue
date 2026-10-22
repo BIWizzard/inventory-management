@@ -65,7 +65,7 @@
                 <td>{{ translateWarehouse(item.location) }}</td>
                 <td>
                   <span :class="['badge', getStockStatusClass(item)]">
-                    {{ getStockStatus(item) }}
+                    {{ getStockStatusLabel(item) }}
                   </span>
                 </td>
               </tr>
@@ -88,6 +88,8 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { api } from '../api'
 import { useFilters } from '../composables/useFilters'
 import { useI18n } from '../composables/useI18n'
+import { getStockStatusKey, getStockStatusClass, getStockStatusLabel } from '../utils/stock'
+import { translateCategory } from '../utils/format'
 import InventoryDetailModal from '../components/InventoryDetailModal.vue'
 
 export default {
@@ -116,17 +118,6 @@ export default {
 
     // Stock status order for sorting (using status keys)
     const STATUS_ORDER = { 'lowStock': 0, 'adequate': 1, 'inStock': 2 }
-
-    // Get stock status key (for sorting and translation)
-    const getStockStatusKey = (item) => {
-      if (item.quantity_on_hand <= item.reorder_point) {
-        return 'lowStock'
-      } else if (item.quantity_on_hand <= item.reorder_point * 1.5) {
-        return 'adequate'
-      } else {
-        return 'inStock'
-      }
-    }
 
     // Computed property to filter items by search query and sort by stock status
     const filteredItems = computed(() => {
@@ -170,32 +161,6 @@ export default {
       loadInventory()
     })
 
-    const getStockStatus = (item) => {
-      const key = getStockStatusKey(item)
-      return t(`status.${key}`)
-    }
-
-    const getStockStatusClass = (item) => {
-      if (item.quantity_on_hand <= item.reorder_point) {
-        return 'danger'
-      } else if (item.quantity_on_hand <= item.reorder_point * 1.5) {
-        return 'warning'
-      } else {
-        return 'success'
-      }
-    }
-
-    const translateCategory = (category) => {
-      const categoryMap = {
-        'Circuit Boards': t('categories.circuitBoards'),
-        'Sensors': t('categories.sensors'),
-        'Actuators': t('categories.actuators'),
-        'Controllers': t('categories.controllers'),
-        'Power Supplies': t('categories.powerSupplies')
-      }
-      return categoryMap[category] || category
-    }
-
     const showItemDetail = (item) => {
       selectedItem.value = item
       showItemModal.value = true
@@ -210,7 +175,7 @@ export default {
       items,
       searchQuery,
       filteredItems,
-      getStockStatus,
+      getStockStatusLabel,
       getStockStatusClass,
       translateCategory,
       showItemModal,

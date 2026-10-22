@@ -176,6 +176,7 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { api } from '../api'
 import { useFilters } from '../composables/useFilters'
 import { useI18n } from '../composables/useI18n'
+import { translateCategory } from '../utils/format'
 import { formatCurrency as formatCurrencyUtil } from '../utils/currency'
 import CostDetailModal from '../components/CostDetailModal.vue'
 
@@ -393,13 +394,6 @@ export default {
       return (value / maxValue) * 100
     }
 
-    const formatDate = (dateString) => {
-      return new Date(dateString).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric'
-      })
-    }
-
     const formatDateShort = (dateString) => {
       const date = new Date(dateString)
       const month = (date.getMonth() + 1).toString().padStart(2, '0')
@@ -424,27 +418,6 @@ export default {
         'Dec': t('months.dec')
       }
       return monthMap[month] || month
-    }
-
-    const translateCategory = (category) => {
-      // First try spending categories
-      const spendingCategoryMap = {
-        'Raw Materials': t('spendingCategories.rawMaterials'),
-        'Components': t('spendingCategories.components'),
-        'Equipment': t('spendingCategories.equipment'),
-        'Consumables': t('spendingCategories.consumables')
-      }
-
-      // Then try product categories
-      const productCategoryMap = {
-        'Circuit Boards': t('categories.circuitBoards'),
-        'Sensors': t('categories.sensors'),
-        'Actuators': t('categories.actuators'),
-        'Controllers': t('categories.controllers'),
-        'Power Supplies': t('categories.powerSupplies')
-      }
-
-      return spendingCategoryMap[category] || productCategoryMap[category] || category
     }
 
     const handleTransactionClick = (transaction) => {
@@ -477,7 +450,6 @@ export default {
       currencySymbol,
       getBarHeight,
       getRevenueBarHeight,
-      formatDate,
       formatDateShort,
       translateMonth,
       translateCategory,

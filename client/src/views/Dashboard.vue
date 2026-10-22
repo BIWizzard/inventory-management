@@ -260,7 +260,7 @@
                   <td>{{ translateCategory(item.category) }}</td>
                   <td>{{ item.unitsOrdered }}</td>
                   <td><strong>{{ formatCurrency(item.revenue, selectedCurrency) }}</strong></td>
-                  <td>{{ formatDate(item.firstOrderDate) }}</td>
+                  <td>{{ formatDate(item.firstOrderDate, DATE_SHORT) }}</td>
                   <td>
                     <span :class="['badge', getStockBadge(item.stockLevel)]">
                       {{ translateStockLevel(item.stockLevel) }}
@@ -302,6 +302,7 @@ import { api } from '../api'
 import { useFilters } from '../composables/useFilters'
 import { useI18n } from '../composables/useI18n'
 import { formatCurrency } from '../utils/currency'
+import { formatDate, translateCategory } from '../utils/format'
 import ProductDetailModal from '../components/ProductDetailModal.vue'
 import BacklogDetailModal from '../components/BacklogDetailModal.vue'
 
@@ -601,17 +602,6 @@ export default {
       return 'danger'
     }
 
-    const translateCategory = (category) => {
-      const categoryMap = {
-        'Circuit Boards': t('categories.circuitBoards'),
-        'Sensors': t('categories.sensors'),
-        'Actuators': t('categories.actuators'),
-        'Controllers': t('categories.controllers'),
-        'Power Supplies': t('categories.powerSupplies')
-      }
-      return categoryMap[category] || category
-    }
-
     const translateStockLevel = (stockLevel) => {
       const stockMap = {
         'In Stock': t('status.inStock'),
@@ -632,13 +622,8 @@ export default {
       return priorityMap[priority] || priority
     }
 
-    const formatDate = (dateString) => {
-      if (!dateString) return '-'
-      const { currentLocale } = useI18n()
-      const locale = currentLocale.value === 'ja' ? 'ja-JP' : 'en-US'
-      const date = new Date(dateString)
-      return date.toLocaleDateString(locale, { month: 'short', day: 'numeric', year: 'numeric' })
-    }
+    // Short date format (e.g. Jan 5, 2025)
+    const DATE_SHORT = { month: 'short', day: 'numeric', year: 'numeric' }
 
     const showProductDetail = (product) => {
       selectedProduct.value = product
@@ -701,6 +686,7 @@ export default {
       translateStockLevel,
       translatePriority,
       formatDate,
+      DATE_SHORT,
       revenueGoal,
       revenueGoalDisplay,
       showProductModal,

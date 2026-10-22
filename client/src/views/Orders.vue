@@ -54,7 +54,8 @@
                       {{ t('orders.itemsCount', { count: order.items.length }) }}
                     </summary>
                     <div class="items-dropdown">
-                      <div v-for="(item, idx) in order.items" :key="idx" class="item-entry">
+                      <!-- Lines have no id and a SKU can repeat within an order at different prices, so key on sku + price + quantity -->
+                      <div v-for="item in order.items" :key="`${item.sku}-${item.unit_price}-${item.quantity}`" class="item-entry">
                         <span class="item-name">{{ translateProductName(item.name) }}</span>
                         <span class="item-meta">{{ t('orders.quantity') }}: {{ item.quantity }} @ {{ currencySymbol }}{{ item.unit_price }}</span>
                       </div>
@@ -66,8 +67,8 @@
                     {{ t(`status.${order.status.toLowerCase()}`) }}
                   </span>
                 </td>
-                <td class="col-date">{{ formatDate(order.order_date) }}</td>
-                <td class="col-date">{{ formatDate(order.expected_delivery) }}</td>
+                <td class="col-date">{{ formatDate(order.order_date, DATE_SHORT) }}</td>
+                <td class="col-date">{{ formatDate(order.expected_delivery, DATE_SHORT) }}</td>
                 <td class="col-value"><strong>{{ currencySymbol }}{{ order.total_value.toLocaleString() }}</strong></td>
               </tr>
             </tbody>
@@ -83,6 +84,7 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { api } from '../api'
 import { useFilters } from '../composables/useFilters'
 import { useI18n } from '../composables/useI18n'
+import { formatDate } from '../utils/format'
 
 export default {
   name: 'Orders',
@@ -143,15 +145,8 @@ export default {
       return statusMap[status] || 'info'
     }
 
-    const formatDate = (dateString) => {
-      const { currentLocale } = useI18n()
-      const locale = currentLocale.value === 'ja' ? 'ja-JP' : 'en-US'
-      return new Date(dateString).toLocaleDateString(locale, {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      })
-    }
+    // Short date format (e.g. Jan 5, 2025)
+    const DATE_SHORT = { year: 'numeric', month: 'short', day: 'numeric' }
 
     onMounted(loadOrders)
 
@@ -163,6 +158,7 @@ export default {
       getOrdersByStatus,
       getOrderStatusClass,
       formatDate,
+      DATE_SHORT,
       currencySymbol,
       translateProductName,
       translateCustomerName

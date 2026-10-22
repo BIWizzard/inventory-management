@@ -25,8 +25,8 @@
                 <h4 class="item-name">{{ translateProductName(inventoryItem.name) }}</h4>
                 <div class="item-sku">SKU: {{ inventoryItem.sku }}</div>
               </div>
-              <span class="stock-badge" :class="getStockStatusClass()">
-                {{ getStockStatus() }}
+              <span class="stock-badge" :class="getStockStatusClass(inventoryItem)">
+                {{ getStockStatusLabel(inventoryItem) }}
               </span>
             </div>
 
@@ -87,8 +87,8 @@
               <div class="info-item">
                 <div class="info-label">Status</div>
                 <div class="info-value">
-                  <span :class="['badge', getStockStatusClass()]">
-                    {{ getStockStatus() }}
+                  <span :class="['badge', getStockStatusClass(inventoryItem)]">
+                    {{ getStockStatusLabel(inventoryItem) }}
                   </span>
                 </div>
               </div>
@@ -107,6 +107,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from '../composables/useI18n'
+import { getStockStatusClass, getStockStatusLabel } from '../utils/stock'
 
 const { currentCurrency, translateProductName, translateWarehouse } = useI18n()
 
@@ -141,37 +142,14 @@ const close = () => {
   emit('close')
 }
 
-const getStockStatus = () => {
-  if (!props.inventoryItem) return 'Unknown'
-  if (props.inventoryItem.quantity_on_hand <= props.inventoryItem.reorder_point) {
-    return 'Low Stock'
-  } else if (props.inventoryItem.quantity_on_hand <= props.inventoryItem.reorder_point * 1.5) {
-    return 'Adequate'
-  } else {
-    return 'In Stock'
-  }
-}
+// Status class comes from the shared stock util so it matches the Inventory table
+const statusClass = () =>
+  props.inventoryItem ? getStockStatusClass(props.inventoryItem) : 'success'
 
-const getStockStatusClass = () => {
-  const status = getStockStatus()
-  if (status === 'Low Stock') return 'danger'
-  if (status === 'Adequate') return 'warning'
-  return 'success'
-}
+// Icon and summary-card classes key off the status class (danger/warning/success)
+const getStockIconClass = () => `${statusClass()}-icon`
 
-const getStockIconClass = () => {
-  const status = getStockStatus()
-  if (status === 'Low Stock') return 'danger-icon'
-  if (status === 'Adequate') return 'warning-icon'
-  return 'success-icon'
-}
-
-const getSummaryCardClass = () => {
-  const status = getStockStatus()
-  if (status === 'Low Stock') return 'danger-card'
-  if (status === 'Adequate') return 'warning-card'
-  return 'success-card'
-}
+const getSummaryCardClass = () => `${statusClass()}-card`
 </script>
 
 <style scoped>
