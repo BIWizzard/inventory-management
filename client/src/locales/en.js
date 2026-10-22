@@ -6,6 +6,13 @@ export default {
     orders: 'Orders',
     finance: 'Finance',
     demandForecast: 'Demand Forecast',
+    reports: 'Reports',
+    collapseSidebar: 'Collapse sidebar',
+    expandSidebar: 'Expand sidebar',
+    closeSidebar: 'Close sidebar',
+    openNavigation: 'Open navigation',
+    main: 'Main',
+    accountLabel: 'Account: {name}',
     companyName: 'Catalyst Components',
     subtitle: 'Inventory Management System'
   },
@@ -308,7 +315,8 @@ export default {
   language: {
     english: 'English',
     japanese: 'Japanese',
-    selectLanguage: 'Select Language'
+    selectLanguage: 'Select Language',
+    currentLanguage: 'Language: {name}'
   },
 
   // Common

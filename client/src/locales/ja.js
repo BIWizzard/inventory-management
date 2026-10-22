@@ -6,6 +6,13 @@ export default {
     orders: '注文',
     finance: '財務',
     demandForecast: '需要予測',
+    reports: 'レポート',
+    collapseSidebar: 'サイドバーを折りたたむ',
+    expandSidebar: 'サイドバーを展開',
+    closeSidebar: 'サイドバーを閉じる',
+    openNavigation: 'ナビゲーションを開く',
+    main: 'メイン',
+    accountLabel: 'アカウント: {name}',
     companyName: '触媒コンポーネンツ',
     subtitle: '在庫管理システム'
   },
@@ -308,6 +315,7 @@ export default {
   language: {
     english: 'English',
     japanese: '日本語',
+    currentLanguage: '言語: {name}',
     selectLanguage: '言語を選択'
   },
 
