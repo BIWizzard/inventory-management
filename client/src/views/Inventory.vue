@@ -55,7 +55,7 @@
                 class="clickable-row"
                 @click="showItemDetail(item)"
               >
-                <td><strong>{{ item.sku }}</strong></td>
+                <td class="code-cell"><strong>{{ item.sku }}</strong></td>
                 <td>{{ translateProductName(item.name) }}</td>
                 <td>{{ translateCategory(item.category) }}</td>
                 <td><strong>{{ item.quantity_on_hand }}</strong></td>
@@ -65,7 +65,7 @@
                 <td>{{ translateWarehouse(item.location) }}</td>
                 <td>
                   <span :class="['badge', getStockStatusClass(item)]">
-                    {{ getStockStatus(item) }}
+                    {{ getStockStatusLabel(item) }}
                   </span>
                 </td>
               </tr>
@@ -88,6 +88,8 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { api } from '../api'
 import { useFilters } from '../composables/useFilters'
 import { useI18n } from '../composables/useI18n'
+import { getStockStatusKey, getStockStatusClass, getStockStatusLabel } from '../utils/stock'
+import { translateCategory } from '../utils/format'
 import InventoryDetailModal from '../components/InventoryDetailModal.vue'
 
 export default {
@@ -116,17 +118,6 @@ export default {
 
     // Stock status order for sorting (using status keys)
     const STATUS_ORDER = { 'lowStock': 0, 'adequate': 1, 'inStock': 2 }
-
-    // Get stock status key (for sorting and translation)
-    const getStockStatusKey = (item) => {
-      if (item.quantity_on_hand <= item.reorder_point) {
-        return 'lowStock'
-      } else if (item.quantity_on_hand <= item.reorder_point * 1.5) {
-        return 'adequate'
-      } else {
-        return 'inStock'
-      }
-    }
 
     // Computed property to filter items by search query and sort by stock status
     const filteredItems = computed(() => {
@@ -170,32 +161,6 @@ export default {
       loadInventory()
     })
 
-    const getStockStatus = (item) => {
-      const key = getStockStatusKey(item)
-      return t(`status.${key}`)
-    }
-
-    const getStockStatusClass = (item) => {
-      if (item.quantity_on_hand <= item.reorder_point) {
-        return 'danger'
-      } else if (item.quantity_on_hand <= item.reorder_point * 1.5) {
-        return 'warning'
-      } else {
-        return 'success'
-      }
-    }
-
-    const translateCategory = (category) => {
-      const categoryMap = {
-        'Circuit Boards': t('categories.circuitBoards'),
-        'Sensors': t('categories.sensors'),
-        'Actuators': t('categories.actuators'),
-        'Controllers': t('categories.controllers'),
-        'Power Supplies': t('categories.powerSupplies')
-      }
-      return categoryMap[category] || category
-    }
-
     const showItemDetail = (item) => {
       selectedItem.value = item
       showItemModal.value = true
@@ -210,7 +175,7 @@ export default {
       items,
       searchQuery,
       filteredItems,
-      getStockStatus,
+      getStockStatusLabel,
       getStockStatusClass,
       translateCategory,
       showItemModal,
@@ -225,115 +190,94 @@ export default {
 </script>
 
 <style scoped>
-.page-header {
-  margin-bottom: 1.5rem;
-}
-
-.page-header h2 {
-  margin-bottom: 0.25rem;
-}
-
-.page-header p {
-  color: #64748b;
-  font-size: 0.875rem;
-}
-
 .card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1.5rem;
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.card-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #0f172a;
-  margin: 0;
+  flex-wrap: wrap;
+  gap: var(--space-4);
 }
 
 .search-box {
   position: relative;
   display: flex;
   align-items: center;
-  min-width: 300px;
+  min-width: 0;
+  width: 300px;
+  max-width: 100%;
 }
 
 .search-icon {
   position: absolute;
-  left: 0.75rem;
-  width: 18px;
-  height: 18px;
-  color: #94a3b8;
+  left: var(--space-3);
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-subtle);
   pointer-events: none;
 }
 
 .search-input {
   width: 100%;
-  padding: 0.5rem 2.5rem 0.5rem 2.5rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  color: #0f172a;
-  background: #f8fafc;
-  transition: all 0.2s;
+  height: 32px;
+  padding: 0 var(--space-8) 0 var(--space-8);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-base);
+  font-family: inherit;
+  color: var(--color-text);
+  background: var(--color-surface);
+  transition: border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
 }
 
 .search-input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  background: white;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--color-accent);
+}
+
+.search-input:focus-visible {
+  outline: 2px solid var(--focus-ring-color);
+  outline-offset: 1px;
 }
 
 .search-input::placeholder {
-  color: #94a3b8;
+  color: var(--color-text-subtle);
 }
 
 .clear-search {
   position: absolute;
-  right: 0.5rem;
+  right: var(--space-2);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.25rem;
+  padding: var(--space-1);
   background: transparent;
   border: none;
-  border-radius: 4px;
-  color: #94a3b8;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-subtle);
   cursor: pointer;
-  transition: all 0.2s;
 }
 
 .clear-search:hover {
-  background: #e2e8f0;
-  color: #64748b;
+  background: var(--color-surface-hover);
+  color: var(--color-text-muted);
 }
 
 .clear-search svg {
-  width: 18px;
-  height: 18px;
-}
-
-.loading,
-.error {
-  padding: 2rem;
-  text-align: center;
-  color: #64748b;
-}
-
-.error {
-  color: #ef4444;
+  width: 16px;
+  height: 16px;
 }
 
 .clickable-row {
   cursor: pointer;
-  transition: background-color 0.15s ease;
 }
 
-.clickable-row:hover {
-  background: #eff6ff !important;
+.clickable-row td:nth-child(n+4):nth-child(-n+7) {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 640px) {
+  .search-box {
+    width: 100%;
+  }
+}
+
+.code-cell {
+  white-space: nowrap;
 }
 </style>

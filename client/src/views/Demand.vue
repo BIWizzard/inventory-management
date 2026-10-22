@@ -181,12 +181,12 @@ export default {
 
       // If change is within ±2%, consider it stable and show blue
       if (changePercent <= 2) {
-        return '#3b82f6' // Blue for stable
+        return 'var(--color-info)' // Blue for stable
       }
 
-      if (change > 0) return '#10b981' // Green for increasing
-      if (change < 0) return '#ef4444' // Red for decreasing
-      return '#3b82f6' // Blue for no change
+      if (change > 0) return 'var(--color-success)' // Green for increasing
+      if (change < 0) return 'var(--color-danger)' // Red for decreasing
+      return 'var(--color-info)' // Blue for no change
     }
 
     const translatePeriod = (period) => {
@@ -226,42 +226,37 @@ export default {
 <style scoped>
 .demand-trend-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: var(--space-5);
+  margin-bottom: var(--space-6);
 }
 
 .trend-card {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 1.5rem;
-  transition: all 0.2s ease;
-}
-
-.trend-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
 }
 
 .increasing-card {
-  border-left: 4px solid #10b981;
+  border-left: 4px solid var(--color-success);
 }
 
 .stable-card {
-  border-left: 4px solid #3b82f6;
+  border-left: 4px solid var(--color-info);
 }
 
 .decreasing-card {
-  border-left: 4px solid #ef4444;
+  border-left: 4px solid var(--color-danger);
 }
 
 .trend-header {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #f1f5f9;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .trend-icon {
@@ -270,100 +265,100 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
-  font-size: 1.75rem;
+  border-radius: var(--radius-md);
+  font-size: var(--text-2xl);
   font-weight: 700;
   flex-shrink: 0;
 }
 
 .increasing-card .trend-icon {
-  background: #d1fae5;
-  color: #059669;
+  background: var(--color-success-soft);
+  color: var(--color-success-text);
 }
 
 .stable-card .trend-icon {
-  background: #dbeafe;
-  color: #2563eb;
+  background: var(--color-info-soft);
+  color: var(--color-info-text);
 }
 
 .decreasing-card .trend-icon {
-  background: #fee2e2;
-  color: #dc2626;
+  background: var(--color-danger-soft);
+  color: var(--color-danger-text);
 }
 
 .trend-label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--color-text-muted);
 }
 
 .trend-count {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #0f172a;
-  margin-top: 0.25rem;
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--color-text);
+  margin-top: var(--space-1);
+  font-variant-numeric: tabular-nums;
 }
 
 .trend-items {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-2);
 }
 
 .trend-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 0.75rem;
-  background: #f8fafc;
-  border-radius: 6px;
-  transition: background 0.2s;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface-sunken);
+  border-radius: var(--radius-sm);
 }
 
 .trend-item:hover {
-  background: #f1f5f9;
+  background: var(--color-surface-hover);
 }
 
 .item-name {
-  font-size: 0.875rem;
-  color: #0f172a;
+  font-size: var(--text-base);
+  color: var(--color-text);
   font-weight: 500;
   flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin-right: 1rem;
+  margin-right: var(--space-4);
 }
 
 .item-change {
-  font-size: 0.813rem;
-  font-weight: 700;
+  font-size: var(--text-sm);
+  font-weight: 600;
   flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
 }
 
 .increasing-card .item-change {
-  color: #059669;
+  color: var(--color-success);
 }
 
 .stable-card .item-change {
-  color: #3b82f6;
+  color: var(--color-info);
 }
 
 .decreasing-card .item-change {
-  color: #dc2626;
+  color: var(--color-danger);
 }
 
 .item-change.neutral {
-  color: #64748b;
+  color: var(--color-text-muted);
 }
 
 .more-items {
-  font-size: 0.813rem;
-  color: #64748b;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
   font-style: italic;
   text-align: center;
-  padding: 0.5rem;
+  padding: var(--space-2);
 }
 </style>
